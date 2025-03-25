@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organic COCOMO Calculator - Ritumoni Banikya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+    
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            /*background-color: #009191;*/
+            background : url("https://i.postimg.cc/9QjrHCf5/Image.jpg");
+            font-family: 'Indie Flower', cursive;
+            perspective: 1000px;
+        }
+
+        .calculator-container {
+            border-radius: 32px;
+            background: #00ffff;
+            box-shadow: 
+                22px 22px 57px #00c7c7,
+                -22px -22px 57px #00ffff;
+            padding: 30px;
+            width: 300px;
+            transform: rotateX(10deg) rotateY(-10deg);
+            transition: all 0.3s ease;
+            border: 2px solid #00e6e6;
+            position: relative;
+        }
+
+        .calculator-container:hover {
+            transform: rotateX(0) rotateY(0);
+            box-shadow: 
+                15px 15px 40px #00c7c7,
+                -15px -15px 40px #00ffff;
+        }
+
+        h1 {
+            text-align: center;
+            color: #003333;
+            margin-bottom: 20px;
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+            font-size: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #003333;
+            font-weight: bold;
+        }
+
+        input {
+            width: 93%;
+            padding: 12px;
+            border: 2px solid #00e6e6;
+            border-radius: 16px;
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 
+                inset 8px 8px 16px #00c7c7,
+                inset -8px -8px 16px #00ffff;
+            font-family: 'Indie Flower', cursive;
+            font-size: 1rem;
+            color: #003333;
+            backdrop-filter: blur(4px);
+        }
+
+        .calculate-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 16px;
+            background: #00ffff;
+            color: #003333;
+            box-shadow: 
+                10px 10px 25px #00c7c7,
+                -10px -10px 25px #00ffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Indie Flower', cursive;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .calculate-btn:hover {
+            box-shadow: 
+                5px 5px 15px #00c7c7,
+                -5px -5px 15px #00ffff;
+            transform: translateY(2px);
+        }
+
+        .calculate-btn:active {
+            box-shadow: 
+                inset 5px 5px 10px #00c7c7,
+                inset -5px -5px 10px #00ffff;
+        }
+
+        #results {
+            margin-top: 20px;
+            text-align: center;
+            border-radius: 16px;
+            padding: 20px;
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 
+                inset 8px 8px 16px #00c7c7,
+                inset -8px -8px 16px #00ffff;
+            border: 2px solid #00e6e6;
+            backdrop-filter: blur(4px);
+        }
+
+        .result-item {
+            margin: 12px 0;
+            color: #003333;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .calculator-container::before {
+            content: '✏️';
+            position: absolute;
+            top: -25px;
+            left: -25px;
+            font-size: 2.5rem;
+            transform: rotate(-15deg);
+            filter: drop-shadow(0 0 8px #00ffff);
+        }
+
+        .calculator-container::after {
+            content: '📊';
+            position: absolute;
+            bottom: -25px;
+            right: -25px;
+            font-size: 2.5rem;
+            transform: rotate(15deg);
+            filter: drop-shadow(0 0 8px #00ffff);
+        }
+
+        @media screen and (max-width: 400px) {
+            .calculator-container {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>Organic cocomo Estimator</h1>
+        <h1>by Ritu</h1>
+        <p><i><b>Enter the number of estimated lines of code and the estimator will determine how much time and how many people will be needed!</b></i></p>
+        
+        <div class="input-group">
+            <label for="kloc">Thousands of Lines of Estimated Code.</label>
+            <input type="number" id="kloc" step="0.1" min="0" required placeholder="[ kloc ] 1 = 1000 lines of code">
+        </div>
+        
+        <button class="calculate-btn" onclick="calculateCocomo()"><b>Estimate!</b> ✨</button>
+        
+        <div id="results">
+            <div class="result-item">
+                Effort (person-months): <span id="effort">-</span>
+            </div>
+            <div class="result-item">
+                Number of Months Needed: <span id="time">-</span>
+            </div>
+            <div class="result-item">
+                Number of People Needed: <span id="staff">-</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function calculateCocomo() {
+            const k = parseFloat(document.getElementById('kloc').value);
+            if (!k || k <= 0) return alert('Invalid KLOC');
+            
+            const [a,b,c,d] = [2.4, 1.05, 2.5, 0.38];
+            const effort = a * Math.pow(k, b);
+            const time = c * Math.pow(effort, d);
+            const staff = Math.max(1, Math.ceil(effort / time));
+            
+            document.getElementById('effort').textContent = effort.toFixed(2);
+            document.getElementById('time').textContent = time.toFixed(2);
+            document.getElementById('staff').textContent = staff;
+        }
+    </script>
+</body>
+</html>
